@@ -1,26 +1,59 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import formatNumber from 'format-number';
+import photographer from './images/girl.png';
 import './App.css';
+import store from './store/index';
+import { setAmount, addAmount, charityAmount } from './actions/index';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+class App extends Component {
+  render() {
+    const { totalAmount, username } = store.getState();
+    return (
+      <div className="App">
+        <img className="App__userpic" src={photographer} alt="user" />
+        <p className="App__username">Hello, {username}! </p>
+        <div className="App__amount">
+          {totalAmount > 0 ? formatNumber({ prefix: '$' })(totalAmount) : '$ 0'}
+          <p className="App__amount--info">Total Amount</p>
+        </div>
+
+        <section className="App__buttons">
+          <button data-amount="10000" onClick={dispatchBtnAction}>
+            WITHDRAW $10,000
+          </button>
+          <button data-amount="5000" onClick={dispatchBtnAction}>
+            WITHDRAW $5,000
+          </button>
+        </section>
+        <section className="App__buttons">
+          <button data-amount="10000" onClick={addAmountBtn}>
+            DEPOSIT $10,000
+          </button>
+          <button data-amount="5000" onClick={addAmountBtn}>
+            DEPOSIT $5,000
+          </button>
+        </section>
+
+        <p className="App__giveaway" onClick={charityBtnAction}>
+          Give away all your cash to charity
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      </div>
+    );
+  }
 }
+
+const dispatchBtnAction = e => {
+  const value = e.target.dataset.amount;
+  store.dispatch(setAmount(value));
+};
+
+const addAmountBtn = e => {
+  const value = e.target.dataset.amount;
+  store.dispatch(addAmount(value));
+};
+
+const charityBtnAction = () => {
+  store.dispatch(charityAmount());
+};
 
 export default App;
